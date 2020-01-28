@@ -1,0 +1,26 @@
+## 0. pre-requisite 
+- install anaconda 
+- install pycharm 
+- git clone 
+- create pycharm project with anaconda ( create virtual environments) 
+## 1. CREATE DJANGO PJT 
+> cd d:\workspace\django\2020_django_study
+> activate . 
+> deactivate
+> activate ./env
+> (env)  python -m pip install --upgrade pip
+> (env)  pip install django
+> django-admin startproject django-study d:\workspace\django\2020_django_study
+> python manage.py migrate
+> python manage.py runserver 
+
+## 2. create app 
+> (env) python manage.py startapp blog
+> gitignore (migrations folder)
+> write 'models.py'
+> (env)  python manage.py createsuperuser
+> (env)  python manage.py runserver 
+> write 'settings.py' for register blog to installed_app 
+> (env) python manage.py makemigrations blog
+> (env) python manage.py migrate
+> register 'Post' with 'admin.site.register(Post)'
