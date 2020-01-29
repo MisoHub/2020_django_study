@@ -1,8 +1,18 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Blog</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="{% static 'blog/bootstrap/bootstrap.css' %}" media="screen">
+    <link rel="stylesheet" href="{% static 'blog/_assets/css/custom.min.css' %}">
+    <!--<link rel="stylesheet" href="../4/superhero/bootstrap.css" media="screen">-->
+    <!--<link rel="stylesheet" href="../_assets/css/custom.min.css">-->
+
+
 </head>
 <body>
 
@@ -14,6 +24,12 @@
 <h4> {{ p.created }} by {{ p.author }}</h4>
 <p> {{  p.content }}</p>
 {% endfor %}
+
+<script src="{% static 'blog/_assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'blog/_assets/js/popper.min.js' %}"></script>
+<script src="{% static 'blog/_assets/js/custom.js' %}"></script>
+<script src="{% static 'blog/bootstrap/js/bootstrap.min.js' %}"></script>
+
 
 </body>
 </html>
