@@ -1,17 +1,26 @@
 from django.shortcuts import render
 from .models import Post
 
+from django.views.generic import ListView
+
 # Create your views here.
 
-def index(request):
+class PostList(ListView):
+    model = Post
 
-    posts = Post.objects.all()
+    def get_queryset(self):
+        return Post.objects.order_by('-created')
 
-    return render(
-        request,
-        'blog/index.html',   # at blog/templates/blog/index.html
-         {
-            'posts' : posts,
-             'a_plus_b' : 1+3 ,
-         }
-    )
+
+# def index(request):
+#
+#     posts = Post.objects.all()
+#
+#     return render(
+#         request,
+#         'blog/index.html',   # at blog/templates/blog/index.html
+#          {
+#             'posts' : posts,
+#              'a_plus_b' : 1+3 ,
+#          }
+#     )

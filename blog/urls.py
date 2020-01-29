@@ -17,5 +17,6 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('',  views.index), # ~/blog/
+    path('',  views.PostList.as_view()), # ~/blog/
+    # path('',  views.index), # ~/blog/
 ]
