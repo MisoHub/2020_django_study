@@ -24,3 +24,8 @@
 > (env) python manage.py makemigrations blog
 > (env) python manage.py migrate
 > register 'Post' with 'admin.site.register(Post)'
+
+
+ref. 
+getbootstrap > documenation > grid system 
+startbootstrap > template > blog > blog home 
