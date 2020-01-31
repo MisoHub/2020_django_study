@@ -79,16 +79,16 @@
             {% for p in  object_list %}
             <div class="card mb-4">
                 {% if p.head_image %}
-                <img class="card-img-top" src=" {{ p.head_image }} " alt="Card image cap">
+                <img class="card-img-top" src="{{ p.head_image.url }}" width="750"  height="350" alt="Card image cap">
+                {% else %}
+                <img class="card-img-top" src="https://picsum.photos/750/300?random=1" alt="Card image cap">
                 {% endif %}
-                <!--<img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">-->
                 <div class="card-body">
                     <h2 class="card-title"> {{ p.title }}  </h2>
                     <p class="card-text"> {{  p.content }} </p>
                 </div>
                 <div class="card-footer text-muted">
-                    <h4> {{ p.created }} by {{ p.author }}</h4>
-                    <a href="#">Start Bootstrap</a>
+                    <h5> {{ p.created }} by {{ p.author }}</h5>
                 </div>
             </div>
             {% endfor %}

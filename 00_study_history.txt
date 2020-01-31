@@ -29,6 +29,10 @@
 ref. 
 getbootstrap > documenation > grid system 
 startbootstrap > template > blog > blog home 
+lorem picsum (image) 
+lorem impsum (text)
 
 ---- 
 change body padding with chrome inspect function 
+add ImageField > pip install Pillow > python manage.py makemigrations  > python manage.py migrate // 모델 바뀔 때 마다 
+	
