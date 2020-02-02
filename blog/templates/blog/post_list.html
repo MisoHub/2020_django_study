@@ -85,8 +85,9 @@
                 {% endif %}
                 <div class="card-body">
                     <h2 class="card-title"> {{ p.title }}  </h2>
-                    <p class="card-text"> {{  p.content }} </p>
+                    <p class="card-text"> {{  p.content  | truncatewords:50 }} </p>
                 </div>
+                 <button class="btn btn-primary btn-sm" type="button">Read More</button>
                 <div class="card-footer text-muted">
                     <h5> {{ p.created }} by {{ p.author }}</h5>
                 </div>
