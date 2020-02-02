@@ -15,7 +15,7 @@
 <body>
 <!-- navbar -->
 
-<div class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+<div class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" id="navbar">
     <div class="container">
         <a href="../" class="navbar-brand">Bootswatch</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,6 +75,9 @@
                 <small> : django test on bootstrap</small>
             </h1>
 
+            <!-- There is no Post -->
+            {% if object_list.exists %}
+
             <!-- Blog Post -->
             {% for p in  object_list %}
             <div class="card mb-4">
@@ -87,17 +90,20 @@
                     <h2 class="card-title"> {{ p.title }}  </h2>
                     <p class="card-text"> {{  p.content  | truncatewords:50 }} </p>
                 </div>
-                 <href='' button class="btn btn-primary btn-sm" type="button">Read More</hrefbutton>
+                <button class="btn btn-primary btn-sm" href="#" type="button">Read More</button>
                 <div class="card-footer text-muted">
                     <h5> {{ p.created }} by {{ p.author }}</h5>
                 </div>
             </div>
             {% endfor %}
+            {% else %}
+            <h4>No pages</h4>
+            {% endif %}
+
         </div>
 
         <!-- Sidebar Widgets Column -->
         <div class="col-md-4">
-
             <!-- Search Widget -->
             <div class="card my-4">
                 <h5 class="card-header">Search</h5>

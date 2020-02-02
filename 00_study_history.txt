@@ -35,4 +35,11 @@ lorem impsum (text)
 ---- 
 change body padding with chrome inspect function 
 add ImageField > pip install Pillow > python manage.py makemigrations  > python manage.py migrate // 모델 바뀔 때 마다 
+
+---- 
+pip install Beautifulsoup4 
+python manage.py tests  // test code 실행 .. 
+test code don't be effect by db.sqlite3 file which already created by manual test
+it start with empty status of db. 	(even function level ..) 
+
 	

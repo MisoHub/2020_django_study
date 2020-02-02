@@ -16,7 +16,7 @@ class PostDetail(DetailView):
     model = Post
 # Create your views here.
 
-# def post_detail(request, pk):
+# def  post_detail(request, pk):
 #     detail_post = Post.objects.get(pk=pk)
 #     return render(
 #         request,
