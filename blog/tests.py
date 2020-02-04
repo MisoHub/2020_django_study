@@ -54,10 +54,13 @@ class TestView(TestCase):
         self.assertGreater(Post.objects.count(),0)
         self.assertIn(post_000.title, soup.body.text)
 
+        post_000_read_more_btn = soup.body.find('button', id='read-more-post-{}'.format(post_000.pk))
+        self.assertIn(post_000.get_absolute_url(), post_000_read_more_btn['onclick'],)
+
     def test_detail_post(self):
 
         post_000 = self.createPost(
-            title='The first tet post',
+            title='The first test post',
             content='first post content',
             author=self.author_000,
         )
@@ -72,7 +75,11 @@ class TestView(TestCase):
         soup = BeautifulSoup(response.content, 'html.parser')
         self.assertEqual(soup.title.text, '{} - Blog'.format(post_000.title))
 
-        # check detail page navbar
+        post_000_main_div = soup.body.find('div', id='main_div')
+        self.assertIn(post_000.title, post_000_main_div.text)
+
+
+    # check detail page navbar
         self.check_navbar(soup=soup)
 
 
