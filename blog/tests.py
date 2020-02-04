@@ -20,8 +20,8 @@ class TestView(TestCase):
             created=timezone.now(),
             author=author,
         )
-
-    def test_page_navbar(self, soup):
+    # method should not be named 'test*'
+    def check_navbar(self, soup):
         navbar = soup.find('div', id='navbar')
         self.assertIn('Blog', navbar.text)
         self.assertIn('About Me', navbar.text)
@@ -35,7 +35,7 @@ class TestView(TestCase):
         self.assertEqual(soup.title.text, 'Blog')
 
         # check post_list navbar
-        self.test_page_navbar(soup=soup)
+        self.check_navbar(soup=soup)
 
         self.assertEqual(Post.objects.count(),0)
         self.assertIn('No pages', soup.body.text)
@@ -73,6 +73,6 @@ class TestView(TestCase):
         self.assertEqual(soup.title.text, '{} - Blog'.format(post_000.title))
 
         # check detail page navbar
-        self.test_page_navbar(soup=soup)
+        self.check_navbar(soup=soup)
 
 
