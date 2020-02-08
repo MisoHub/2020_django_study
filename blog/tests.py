@@ -1,25 +1,60 @@
 from django.test import TestCase, Client
-from blog.models import Post
+from blog.models import Post, Category
 from django.utils import timezone
 from django.contrib.auth.models import User
 
 from bs4 import BeautifulSoup
 # Create your tests here.
 
-class TestView(TestCase):
+def create_category(name='jazz', description=''):
+    category, iscreated = Category.objects.get_or_create(
+        name=name,
+        description=description
+    )
+    return category
 
+def create_post(title, content, author, category=None):
+    return Post.objects.create(
+        title=title,
+        content=content,
+        created=timezone.now(),
+        author=author,
+        category=category
+    )
+
+
+class TestModel(TestCase):
+    def setUp(self):
+        # self.client = Client() ## -- can be skipped
+        self.author_000 = User.objects.create_user(username='smith', password='test')
+
+    def test_category(self):
+        category = create_category()
+        post_000 = create_post(
+            title ='The first tet post',
+            content = 'first post content',
+            author = self.author_000,
+            category = category
+        )
+        self.assertEqual(category.post_set.count(),1)
+
+    def test_post(self):
+        category = create_category('jazz')
+        post_000 = create_post(
+            title ='The first tet post',
+            content = 'first post content',
+            author = self.author_000,
+            category = category
+        )
+
+
+class TestView(TestCase):
 
     def setUp(self):
         # self.client = Client() ## -- can be skipped
         self.author_000 = User.objects.create_user(username='smith', password='test')
 
-    def createPost(self, title, content, author):
-        return Post.objects.create(
-            title=title,
-            content=content,
-            created=timezone.now(),
-            author=author,
-        )
+
     # method should not be named 'test*'
     def check_navbar(self, soup):
         navbar = soup.find('div', id='navbar')
@@ -40,7 +75,7 @@ class TestView(TestCase):
         self.assertEqual(Post.objects.count(),0)
         self.assertIn('No pages', soup.body.text)
 
-        post_000 = self.createPost(
+        post_000 = create_post(
             title ='The first tet post',
             content = 'first post content',
             author = self.author_000,
@@ -59,7 +94,7 @@ class TestView(TestCase):
 
     def test_detail_post(self):
 
-        post_000 = self.createPost(
+        post_000 = create_post(
             title='The first test post',
             content='first post content',
             author=self.author_000,
