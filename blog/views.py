@@ -3,7 +3,7 @@ from .models import Post
 
 from django.views.generic import ListView,DetailView
 
-
+from .models import Category
 
 class PostList(ListView):
     model = Post
@@ -11,6 +11,13 @@ class PostList(ListView):
     def get_queryset(self):
         return Post.objects.order_by('-created')
         # To ordering recent post
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(PostList, self).get_context_data(**kwargs)
+        context['category_list'] = Category.objects.all()
+        context['posts_without_category'] = Post.objects.filter(category=None).count()
+        return context
+        
 
 class PostDetail(DetailView):
     model = Post

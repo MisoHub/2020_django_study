@@ -17,6 +17,14 @@
     {% else %}
     <img class="card-img-top" src="https://picsum.photos/750/300?random=1" alt="Card image cap">
     {% endif %}
+
+    <div class="card mb-6">
+    {% if p.category %}
+    <button type="button" class="btn btn-info">{{ p.category }}</button>
+    {% else %}
+    <button type="button" class="btn btn-info">No Category</button>
+    {% endif %}
+    </div>
     <div class="card-body">
         <h2 class="card-title"> {{ p.title }}  </h2>
         <p class="card-text"> {{  p.content  | truncatewords:50 }} </p>
@@ -25,6 +33,7 @@
     <div class="card-footer text-muted">
         <h5> {{ p.created }} by {{ p.author }}</h5>
     </div>
+
 </div>
 {% endfor %}
 {% else %}

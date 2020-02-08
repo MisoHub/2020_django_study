@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from bs4 import BeautifulSoup
 # Create your tests here.
 
-def create_category(name='jazz', description=''):
+def create_category(name="Jazz", description=''):
     category, iscreated = Category.objects.get_or_create(
         name=name,
         description=description
@@ -39,7 +39,7 @@ class TestModel(TestCase):
         self.assertEqual(category.post_set.count(),1)
 
     def test_post(self):
-        category = create_category('jazz')
+        category = create_category('Jazz')
         post_000 = create_post(
             title ='The first tet post',
             content = 'first post content',
@@ -61,7 +61,7 @@ class TestView(TestCase):
         self.assertIn('Blog', navbar.text)
         self.assertIn('About Me', navbar.text)
 
-    def test_post_list(self):
+    def test_post_list_without_post(self):
         response = self.client.get('/blog/')
         self.assertEqual(response.status_code, 200)
 
@@ -75,10 +75,18 @@ class TestView(TestCase):
         self.assertEqual(Post.objects.count(),0)
         self.assertIn('No pages', soup.body.text)
 
+    def test_post_list_with_post(self):
         post_000 = create_post(
             title ='The first tet post',
             content = 'first post content',
             author = self.author_000,
+        )
+
+        post_001 = create_post(
+            title='The first tet post',
+            content='first post content',
+            author=self.author_000,
+            category=create_category()
         )
 
         response = self.client.get('/blog/')
@@ -91,6 +99,20 @@ class TestView(TestCase):
 
         post_000_read_more_btn = soup.body.find('button', id='read-more-post-{}'.format(post_000.pk))
         self.assertIn(post_000.get_absolute_url(), post_000_read_more_btn['onclick'],)
+
+        category_card = soup.body.find('div',id='category-card')
+        self.assertIn('No Category(1)', category_card.text)
+        # self.assertIn('Jazz(1)', category_card.text)
+
+
+        main_div = soup.body.find('div', id='main_div')
+        self.assertIn('No Category', main_div.text)
+        self.assertIn('Jazz', main_div.text)
+
+    # def test_category_card(self):
+
+
+
 
     def test_detail_post(self):
 
