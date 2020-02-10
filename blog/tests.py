@@ -9,8 +9,10 @@ from bs4 import BeautifulSoup
 def create_category(name="Jazz", description=''):
     category, iscreated = Category.objects.get_or_create(
         name=name,
-        description=description
+        description=description,
+        slug = name.lower().replace(' ', '-').replace('/', '')
     )
+
     return category
 
 def create_post(title, content, author, category=None):
@@ -28,7 +30,7 @@ class TestModel(TestCase):
         # self.client = Client() ## -- can be skipped
         self.author_000 = User.objects.create_user(username='smith', password='test')
 
-    def test_category(self):
+    def test_create_category(self):
         category = create_category()
         post_000 = create_post(
             title ='The first tet post',
@@ -113,7 +115,7 @@ class TestView(TestCase):
         self.check_side_categories(soup=soup)
 
         # check post list categories
-        main_div = soup.body.find('div', id='main_div')
+        main_div = soup.body.find('div', id='main-div')
         self.assertIn('No Category', main_div.text)
         self.assertIn('Jazz', main_div.text)
 
@@ -144,7 +146,7 @@ class TestView(TestCase):
         soup = BeautifulSoup(response.content, 'html.parser')
         self.assertEqual(soup.title.text, '{} - Blog'.format(post_000.title))
 
-        post_000_main_div = soup.body.find('div', id='main_div')
+        post_000_main_div = soup.body.find('div', id='main-div')
         self.assertIn(post_000.title, post_000_main_div.text)
 
         # check detail page navbar
@@ -154,5 +156,55 @@ class TestView(TestCase):
         self.check_side_categories(soup=soup)
 
 
+    def test_post_list_by_category(self):
+
+        post_000 = create_post(
+            title='The first test post',
+            content='first post content',
+            author=self.author_000,
+        )
+
+        post_001 = create_post(
+            title='The second test post',
+            content='second post content',
+            author=self.author_000,
+            category=create_category(name='Jazz'),
+        )
+
+        response = self.client.get(post_001.category.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        # self.assertEqual(soup.title.text, 'Blog - {}'.format(category_jazz.name))
+
+        main_div = soup.find('div',id='main-div')
+
+        self.assertNotIn('No Category',main_div.text)
+        self.assertIn(post_001.category.name, main_div.text)
+
+
+
+    def test_post_list_no_category(self):
+        post_000 = create_post(
+            title='The first test post',
+            content='first post content',
+            author=self.author_000,
+        )
+
+        post_001 = create_post(
+            title='The second test post',
+            content='second post content',
+            author=self.author_000,
+            category=create_category(name='Jazz'),
+        )
+
+        response = self.client.get('/blog/category/_none/')
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div',id='main-div')
+
+        self.assertIn('No Category',main_div.text)
+        self.assertNotIn(post_001.category.name, main_div.text)
 
 

@@ -1,9 +1,10 @@
 {% extends 'blog/base.html' %}
 
+
 {% block content %}
 <!-- Blog Entries Column -->
 <h1 class="my-4">Blog
-    <small> : django test on bootstrap</small>
+    <small> {% if filtered_category %}-{{ filtered_category }} {% else %} -NOCATEGORY {% endif %} </small>
 </h1>
 
 <!-- There is no Post -->
