@@ -54,12 +54,18 @@ class TestView(TestCase):
         # self.client = Client() ## -- can be skipped
         self.author_000 = User.objects.create_user(username='smith', password='test')
 
-
     # method should not be named 'test*'
     def check_navbar(self, soup):
         navbar = soup.find('div', id='navbar')
         self.assertIn('Blog', navbar.text)
         self.assertIn('About Me', navbar.text)
+
+    def check_side_categories(self, soup):
+        category_card = soup.body.find('div', id='category-card')
+        self.assertIn('No Category(1)', category_card.text)
+        self.assertIn('Jazz(1)', category_card.text)
+
+
 
     def test_post_list_without_post(self):
         response = self.client.get('/blog/')
@@ -83,8 +89,8 @@ class TestView(TestCase):
         )
 
         post_001 = create_post(
-            title='The first tet post',
-            content='first post content',
+            title='The second test post',
+            content='second post content',
             author=self.author_000,
             category=create_category()
         )
@@ -100,17 +106,16 @@ class TestView(TestCase):
         post_000_read_more_btn = soup.body.find('button', id='read-more-post-{}'.format(post_000.pk))
         self.assertIn(post_000.get_absolute_url(), post_000_read_more_btn['onclick'],)
 
-        category_card = soup.body.find('div',id='category-card')
-        self.assertIn('No Category(1)', category_card.text)
-        # self.assertIn('Jazz(1)', category_card.text)
+        # check post list navbar
+        self.check_navbar(soup=soup)
 
+        # check post list side categories
+        self.check_side_categories(soup=soup)
 
+        # check post list categories
         main_div = soup.body.find('div', id='main_div')
         self.assertIn('No Category', main_div.text)
         self.assertIn('Jazz', main_div.text)
-
-    # def test_category_card(self):
-
 
 
 
@@ -120,6 +125,13 @@ class TestView(TestCase):
             title='The first test post',
             content='first post content',
             author=self.author_000,
+        )
+
+        post_001 = create_post(
+            title='The second test post',
+            content='second post content',
+            author=self.author_000,
+            category=create_category()
         )
 
         self.assertGreater(Post.objects.count(), 0)
@@ -135,8 +147,12 @@ class TestView(TestCase):
         post_000_main_div = soup.body.find('div', id='main_div')
         self.assertIn(post_000.title, post_000_main_div.text)
 
-
-    # check detail page navbar
+        # check detail page navbar
         self.check_navbar(soup=soup)
+
+        # check detail page categories
+        self.check_side_categories(soup=soup)
+
+
 
 

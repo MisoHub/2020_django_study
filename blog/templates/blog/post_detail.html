@@ -24,6 +24,13 @@
 {% endif %}
 <hr>
 
+<!-- Content Category -->
+{% if p.category %}
+<span class="badge badge-primary float-right">{{ p.category }}</span>
+{% else %}
+<span class="badge badge-primary float-right">No Category</span>
+{% endif %}
+
 <!-- Post Content -->
 <div>{{ object.content }} </div>
 <hr>

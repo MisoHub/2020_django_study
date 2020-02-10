@@ -18,18 +18,18 @@
     <img class="card-img-top" src="https://picsum.photos/750/300?random=1" alt="Card image cap">
     {% endif %}
 
-    <div class="card mb-6">
-    {% if p.category %}
-    <button type="button" class="btn btn-info">{{ p.category }}</button>
-    {% else %}
-    <button type="button" class="btn btn-info">No Category</button>
-    {% endif %}
-    </div>
     <div class="card-body">
+        {% if p.category %}
+        <span class="badge badge-primary float-right">{{ p.category }}</span>
+        {% else %}
+        <span class="badge badge-primary float-right">No Category</span>
+        {% endif %}
         <h2 class="card-title"> {{ p.title }}  </h2>
         <p class="card-text"> {{  p.content  | truncatewords:50 }} </p>
+        <button class="btn btn-outline-primary btn-sm" onclick="location.href='{{ p.get_absolute_url }}'" type="button" id="read-more-post-{{ p.pk }}">Read More</button>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="location.href='{{ p.get_absolute_url }}'" type="button" id="read-more-post-{{ p.pk }}">Read More</button>
+
+
     <div class="card-footer text-muted">
         <h5> {{ p.created }} by {{ p.author }}</h5>
     </div>
