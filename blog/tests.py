@@ -105,8 +105,6 @@ class TestView(TestCase):
         self.assertIn('No Category(1)', category_card.text)
         self.assertIn('Jazz(1)', category_card.text)
 
-
-
     def test_post_list_without_post(self):
         response = self.client.get('/blog/')
         self.assertEqual(response.status_code, 200)
@@ -122,11 +120,18 @@ class TestView(TestCase):
         self.assertIn('No pages', soup.body.text)
 
     def test_post_list_with_post(self):
+        tag_bluenote = create_tag('blue_note')
+        tag_emc = create_tag('emc')
         post_000 = create_post(
             title ='The first tet post',
             content = 'first post content',
             author = self.author_000,
         )
+
+        post_000.tags.add(tag_emc)
+        post_000.tags.add(tag_bluenote)
+        post_000.save()
+
 
         post_001 = create_post(
             title='The second test post',
@@ -134,6 +139,8 @@ class TestView(TestCase):
             author=self.author_000,
             category=create_category()
         )
+        post_001.tags.add(tag_emc)
+        post_001.save()
 
         response = self.client.get('/blog/')
         self.assertEqual(response.status_code, 200)
@@ -157,15 +164,29 @@ class TestView(TestCase):
         self.assertIn('No Category', main_div.text)
         self.assertIn('Jazz', main_div.text)
 
+        # check post list tag
+        post_000_card = main_div.find('div', id='post-card-{}'.format(post_000.pk))
+        self.assertIn('#{}'.format(tag_emc), post_000_card.text)
+        self.assertIn('#{}'.format(tag_bluenote), post_000_card.text)
+
+        # check post list tag
+        post_001_card = main_div.find('div', id='post-card-{}'.format(post_001.pk))
+        self.assertIn('#{}'.format(tag_emc), post_001_card.text)
 
 
     def test_detail_post(self):
+        tag_bluenote = create_tag('blue_note')
+        tag_emc = create_tag('emc')
 
         post_000 = create_post(
             title='The first test post',
             content='first post content',
             author=self.author_000,
         )
+
+        post_000.tags.add(tag_emc)
+        post_000.tags.add(tag_bluenote)
+        post_000.save()
 
         post_001 = create_post(
             title='The second test post',
@@ -192,6 +213,11 @@ class TestView(TestCase):
 
         # check detail page categories
         self.check_side_categories(soup=soup)
+
+        # check post list tag
+        self.assertIn('#{}'.format(tag_emc), post_000_main_div.text)
+        self.assertIn('#{}'.format(tag_bluenote), post_000_main_div.text)
+
 
 
     def test_post_list_by_category(self):
@@ -245,4 +271,35 @@ class TestView(TestCase):
         self.assertIn('No Category',main_div.text)
         self.assertNotIn(post_001.category.name, main_div.text)
 
+
+
+    def test_post_list_with_tag(self):
+        tag_bluenote = create_tag('blue_note')
+        tag_emc = create_tag('emc')
+        post_000 = create_post(
+            title='The first tet post',
+            content='first post content',
+            author=self.author_000,
+        )
+
+        post_000.tags.add(tag_bluenote)
+        post_000.save()
+
+        post_001 = create_post(
+            title='The second test post',
+            content='second post content',
+            author=self.author_000,
+            category=create_category()
+        )
+        post_001.tags.add(tag_emc)
+        post_001.save()
+
+        response = self.client.get(tag_bluenote.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div',id='main-div')
+
+        self.assertIn('#{}'.format(tag_bluenote), main_div.text)
+        self.assertNotIn('#{}'.format(tag_emc), main_div.text)
 

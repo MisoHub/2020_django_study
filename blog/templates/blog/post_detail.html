@@ -25,8 +25,8 @@
 <hr>
 
 <!-- Content Category -->
-{% if p.category %}
-<span class="badge badge-primary float-right">{{ p.category }}</span>
+{% if object.category %}
+<span class="badge badge-primary float-right">{{ object.category }}</span>
 {% else %}
 <span class="badge badge-primary float-right">No Category</span>
 {% endif %}
@@ -34,6 +34,10 @@
 <!-- Post Content -->
 <div>{{ object.content }} </div>
 <hr>
+
+{% for t in object.tags.all %}
+<a href="{{ t.get_absolute_url }}">#{{ t }}</a>
+{% endfor %}
 
 <!-- Comments Form -->
 <div class="card my-4">

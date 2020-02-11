@@ -43,7 +43,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=True)
 
     category = models.ForeignKey(Category, blank=True, null=True, on_delete=models.SET_NULL)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return '{} :: {} '.format(self.title,self.author)

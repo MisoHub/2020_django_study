@@ -1,9 +1,6 @@
 from django.shortcuts import render
-from .models import Post
-
+from .models import Post, Category, Tag
 from django.views.generic import ListView,DetailView
-
-from .models import Category
 
 class PostList(ListView):
     model = Post
@@ -38,6 +35,23 @@ class PostListByCategory(ListView):
         context = super(type(self), self).get_context_data(**kwargs)
         slug = self.kwargs['slug']
         context['filtered_category'] = None if slug == '_none' else Category.objects.get(slug=slug)
+        context['category_list'] = Category.objects.all()
+        context['posts_without_category'] = Post.objects.filter(category=None).count()
+        return context
+
+
+class PostListByTag(ListView):
+    def get_queryset(self):
+        slug = self.kwargs['slug']
+        tag = Tag.objects.get(slug=slug)
+        return tag.post_set.order_by('-created')
+        # To ordering recent post
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(type(self), self).get_context_data(**kwargs)
+        slug = self.kwargs['slug']
+        context['filtered_tag'] = Tag.objects.get(slug=slug)
+        context['is_tag'] = 'TAG'
         context['category_list'] = Category.objects.all()
         context['posts_without_category'] = Post.objects.filter(category=None).count()
         return context

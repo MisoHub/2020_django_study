@@ -20,6 +20,7 @@ urlpatterns = [
     path('', views.PostList.as_view()),  # ~/blog/
     path('<int:pk>/', views.PostDetail.as_view()),  # ~/blog/pk
     path('category/<str:slug>/', views.PostListByCategory.as_view()),
+    path('tag/<str:slug>/', views.PostListByTag.as_view()),
     # path('<int:pk>/', views.post_detail),
     # path('',  views.index), # ~/blog/
 ]
