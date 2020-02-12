@@ -6,38 +6,51 @@
 <!-- Title -->
 <h2 class="mt-4">{{ object.title }}</h2>
 
-<!-- Author -->
-<p class="lead">
-    by
-    <a href="#">{{ object.author }}</a>
-</p>
-
-<hr>
-
-<!-- Date/Time -->
-<p>Posted on {{ object.created }} </p>
-<hr>
-
-<!-- Preview Image -->
-{% if object.head_image %}
-<img class="card-img-top" src="{{ object.head_image.url }}" width="750"  height="350" alt="Card image cap">
-{% endif %}
-<hr>
-
 <!-- Content Category -->
+<p>
 {% if object.category %}
 <span class="badge badge-primary float-right">{{ object.category }}</span>
 {% else %}
 <span class="badge badge-primary float-right">No Category</span>
 {% endif %}
+</p>
+
+<!-- Author --> <!-- Date/Time -->
+<p>
+    Posted on {{ object.created }}  by
+    <a href="#">{{ object.author }}</a>
+</p>
+
+<hr>
+<p>
+<!-- Preview Image -->
+{% if object.head_image %}
+<img class="card-img-top" src="{{ object.head_image.url }}" width="750"  height="350" alt="Card image cap">
+{% else %}
+<img class="card-img-top" src="https://picsum.photos/750/300?random=1" width="750"  height="350" alt="Card image cap">
+{% endif %}
+</p>
 
 <!-- Post Content -->
 <div>{{ object.content }} </div>
-<hr>
 
+<!-- edit button -->
+<p>
+{% ifequal request.user object.author %}
+    <button type="button" class="btn btn-outline-primary float-right btn-sm">EDIT</button>
+{% endifequal %}
+</p>
+
+<!-- Tags -->
+<p>
 {% for t in object.tags.all %}
 <a href="{{ t.get_absolute_url }}">#{{ t }}</a>
 {% endfor %}
+</p>
+
+
+<hr>
+
 
 <!-- Comments Form -->
 <div class="card my-4">

@@ -92,7 +92,7 @@ class TestView(TestCase):
 
     def setUp(self):
         # self.client = Client() ## -- can be skipped
-        self.author_000 = User.objects.create_user(username='smith', password='test')
+        self.author_000 = User.objects.create_user(username='smith', password='smith')
 
     # method should not be named 'test*'
     def check_navbar(self, soup):
@@ -218,6 +218,19 @@ class TestView(TestCase):
         self.assertIn('#{}'.format(tag_emc), post_000_main_div.text)
         self.assertIn('#{}'.format(tag_bluenote), post_000_main_div.text)
 
+        # edit button check
+        post_000_main_div_btn = post_000_main_div.find('button')
+        self.assertNotIn('EDIT', post_000_main_div.text)
+
+        # login test
+        login_success = self.client.login(username='smith', password='smith')
+        self.assertTrue(login_success)
+
+        response = self.client.get(post_000_url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        post_000_main_div = soup.body.find('div', id='main-div')
+
+        self.assertIn('EDIT', post_000_main_div.text)
 
 
     def test_post_list_by_category(self):
