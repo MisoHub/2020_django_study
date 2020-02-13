@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from markdownx.models import MarkdownxField
+from markdownx.utils import markdown
 
 # Create your models here.
 
@@ -35,7 +37,7 @@ class Category(models.Model):
 
 class Post(models.Model):
     title = models.CharField(max_length=60)
-    content = models.TextField()
+    content = MarkdownxField()
 
     head_image = models.ImageField(upload_to='blog/%Y%m%d', blank=True)
 
@@ -51,3 +53,5 @@ class Post(models.Model):
     def get_absolute_url(self):
         return '/blog/{}/'.format(self.pk)
 
+    def get_markdown_content(self):
+        return markdown(self.content)

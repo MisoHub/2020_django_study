@@ -3,9 +3,9 @@
 
 {% block content %}
 <!-- Blog Entries Column -->
-<h1 class="my-4">Blog
-    <small> {% if filtered_category %}-{{ filtered_category }} {% elif filtered_tag %} #{{ filtered_tag }} {% elif filtered_tag %} #NOTAG {% else %} -NOCATEGORY {% endif %} </small>
-</h1>
+<h3 class="my-4"> Posts
+    <small class="text-muted"> {% if filtered_category %}   -{{ filtered_category }} {% elif filtered_tag %}  #{{ filtered_tag }}  {% else %}  {% endif %} </small>
+</h3>
 
 <!-- There is no Post -->
 {% if object_list.exists %}
@@ -26,7 +26,7 @@
         <span class="badge badge-primary float-right">No Category</span>
         {% endif %}
         <h2 class="card-title"> {{ p.title }}  </h2>
-        <p class="card-text"> {{  p.content  | truncatewords:50 }} </p>
+        <p class="card-text"> {{  p.get_markdown_content | safe | truncatewords:50 }} </p>
         {% for t in p.tags.all %}
         <a href="{{ t.get_absolute_url }}">#{{ t }}</a>
         {% endfor %}

@@ -32,7 +32,7 @@
 </p>
 
 <!-- Post Content -->
-<div>{{ object.content }} </div>
+<div>{{ object.get_markdown_content | safe }} </div>
 
 <!-- edit button -->
 <p>
