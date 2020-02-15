@@ -36,8 +36,15 @@
 
 <!-- edit button -->
 <p>
+
 {% ifequal request.user object.author %}
     <button type="button" class="btn btn-outline-primary float-right btn-sm">EDIT</button>
+{% else %}
+    {% if  request.user.text == admin %}
+        <button type="button" class="btn btn-outline-primary float-right btn-sm" onclick="location.href=' {{ object.get_update_url }} '">EDIT</button>
+    {% endif %}
+
+
 {% endifequal %}
 </p>
 

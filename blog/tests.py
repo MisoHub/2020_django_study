@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 
 from bs4 import BeautifulSoup
 # Create your tests here.
-
 def create_category(name="Jazz", description=''):
     category, iscreated = Category.objects.get_or_create(
         name=name,
@@ -32,7 +31,6 @@ def create_post(title, content, author, category=None):
         author=author,
         category=category
     )
-
 
 class TestModel(TestCase):
     def setUp(self):
@@ -76,7 +74,6 @@ class TestModel(TestCase):
         self.assertEqual(tag_001.post_set.count(),2)
         self.assertEqual(tag_001.post_set.first(),post_000)
         self.assertEqual(tag_001.post_set.last(),post_001)
-
 
     def test_post(self):
         category = create_category('Jazz')
@@ -173,7 +170,6 @@ class TestView(TestCase):
         post_001_card = main_div.find('div', id='post-card-{}'.format(post_001.pk))
         self.assertIn('#{}'.format(tag_emc), post_001_card.text)
 
-
     def test_detail_post(self):
         tag_bluenote = create_tag('blue_note')
         tag_emc = create_tag('emc')
@@ -232,15 +228,12 @@ class TestView(TestCase):
 
         self.assertIn('EDIT', post_000_main_div.text)
 
-
     def test_post_list_by_category(self):
-
         post_000 = create_post(
             title='The first test post',
             content='first post content',
             author=self.author_000,
         )
-
         post_001 = create_post(
             title='The second test post',
             content='second post content',
@@ -258,8 +251,6 @@ class TestView(TestCase):
 
         self.assertNotIn('No Category',main_div.text)
         self.assertIn(post_001.category.name, main_div.text)
-
-
 
     def test_post_list_no_category(self):
         post_000 = create_post(
@@ -283,8 +274,6 @@ class TestView(TestCase):
 
         self.assertIn('No Category',main_div.text)
         self.assertNotIn(post_001.category.name, main_div.text)
-
-
 
     def test_post_list_with_tag(self):
         tag_bluenote = create_tag('blue_note')
@@ -316,3 +305,18 @@ class TestView(TestCase):
         self.assertIn('#{}'.format(tag_bluenote), main_div.text)
         self.assertNotIn('#{}'.format(tag_emc), main_div.text)
 
+    def test_post_update(self):
+        post_000 = create_post(
+            title='The first test post',
+            content='first post content',
+            author=self.author_000,
+        )
+        self.assertEqual(post_000.get_update_url(),post_000.get_absolute_url()+'update/')
+        response = self.client.get(post_000.get_update_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div',id='main-div')
+
+        self.assertNotIn('Created', main_div.text)
+        self.assertNotIn('Author', main_div.text)
