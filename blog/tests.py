@@ -327,7 +327,7 @@ class TestView(TestCase):
 
     def test_post_create(self):
         response = self.client.get('/blog/create/')
-        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.status_code, 200)
 
         response = self.client.get('/blog/')
         soup = BeautifulSoup(response.content, 'html.parser')
@@ -338,6 +338,7 @@ class TestView(TestCase):
         self.assertTrue(login_success)
 
         response = self.client.get('/blog/')
+        self.assertEqual(response.status_code, 200)
         soup = BeautifulSoup(response.content, 'html.parser')
         side_div = soup.find('div', id='side-div')
         self.assertIn('New Post', side_div.text)

@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from .models import Post, Category, Tag
 from django.views.generic import ListView,DetailView,UpdateView, CreateView
@@ -24,15 +25,14 @@ class PostDetail(DetailView):
         context['posts_without_category'] = Post.objects.filter(category=None).count()
         return context
 
-class PostCreate(CreateView):
+class PostCreate(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['title', 'content', 'head_image', 'category', 'tags']
+    
     def form_valid(self, form):
         if self.request.user is None or self.request.user.is_anonymous:
             return redirect('/blog/')
-        
         current_user = self.request.user
-        print(current_user)
         if current_user.is_authenticated():
             form.instance.author = current_user
         else:
