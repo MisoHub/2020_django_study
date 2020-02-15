@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 from bs4 import BeautifulSoup
+
+
 # Create your tests here.
 def create_category(name="Jazz", description=''):
     category, iscreated = Category.objects.get_or_create(
@@ -14,6 +16,7 @@ def create_category(name="Jazz", description=''):
     category.save()
     return category
 
+
 def create_tag(name='blue_note', description=''):
     tag, iscreated = Tag.objects.get_or_create(
         name=name,
@@ -22,6 +25,7 @@ def create_tag(name='blue_note', description=''):
     tag.slug = name.lower().replace(' ', '-').replace('/', '')
     tag.save()
     return tag
+
 
 def create_post(title, content, author, category=None):
     return Post.objects.create(
@@ -32,6 +36,7 @@ def create_post(title, content, author, category=None):
         category=category
     )
 
+
 class TestModel(TestCase):
     def setUp(self):
         # self.client = Client() ## -- can be skipped
@@ -40,21 +45,21 @@ class TestModel(TestCase):
     def test_create_category(self):
         category_000 = create_category()
         post_000 = create_post(
-            title ='The first test post',
-            content = 'first post content',
-            author = self.author_000,
-            category = category_000,
+            title='The first test post',
+            content='first post content',
+            author=self.author_000,
+            category=category_000,
         )
-        self.assertEqual(category_000.post_set.count(),1)
+        self.assertEqual(category_000.post_set.count(), 1)
 
     def test_create_tag(self):
         tag_000 = create_tag()
         tag_001 = create_tag('emc')
 
         post_000 = create_post(
-            title ='The first test post',
-            content = 'first post content',
-            author = self.author_000,
+            title='The first test post',
+            content='first post content',
+            author=self.author_000,
         )
 
         post_000.tags.add(tag_000)
@@ -62,26 +67,26 @@ class TestModel(TestCase):
         post_000.save()
 
         post_001 = create_post(
-            title ='The second test post',
-            content = 'second post content',
-            author = self.author_000,
+            title='The second test post',
+            content='second post content',
+            author=self.author_000,
         )
 
         post_001.tags.add(tag_001)
         post_001.save()
 
-        self.assertEqual(post_000.tags.count(),2)
-        self.assertEqual(tag_001.post_set.count(),2)
-        self.assertEqual(tag_001.post_set.first(),post_000)
-        self.assertEqual(tag_001.post_set.last(),post_001)
+        self.assertEqual(post_000.tags.count(), 2)
+        self.assertEqual(tag_001.post_set.count(), 2)
+        self.assertEqual(tag_001.post_set.first(), post_000)
+        self.assertEqual(tag_001.post_set.last(), post_001)
 
     def test_post(self):
         category = create_category('Jazz')
         post_000 = create_post(
-            title ='The first tet post',
-            content = 'first post content',
-            author = self.author_000,
-            category = category
+            title='The first tet post',
+            content='first post content',
+            author=self.author_000,
+            category=category
         )
 
 
@@ -113,22 +118,21 @@ class TestView(TestCase):
         # check post_list navbar
         self.check_navbar(soup=soup)
 
-        self.assertEqual(Post.objects.count(),0)
+        self.assertEqual(Post.objects.count(), 0)
         self.assertIn('No pages', soup.body.text)
 
     def test_post_list_with_post(self):
         tag_bluenote = create_tag('blue_note')
         tag_emc = create_tag('emc')
         post_000 = create_post(
-            title ='The first tet post',
-            content = 'first post content',
-            author = self.author_000,
+            title='The first tet post',
+            content='first post content',
+            author=self.author_000,
         )
 
         post_000.tags.add(tag_emc)
         post_000.tags.add(tag_bluenote)
         post_000.save()
-
 
         post_001 = create_post(
             title='The second test post',
@@ -144,11 +148,11 @@ class TestView(TestCase):
 
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        self.assertGreater(Post.objects.count(),0)
+        self.assertGreater(Post.objects.count(), 0)
         self.assertIn(post_000.title, soup.body.text)
 
         post_000_read_more_btn = soup.body.find('button', id='read-more-post-{}'.format(post_000.pk))
-        self.assertIn(post_000.get_absolute_url(), post_000_read_more_btn['onclick'],)
+        self.assertIn(post_000.get_absolute_url(), post_000_read_more_btn['onclick'], )
 
         # check post list navbar
         self.check_navbar(soup=soup)
@@ -216,7 +220,7 @@ class TestView(TestCase):
 
         # edit button check
         post_000_main_div_btn = post_000_main_div.find('button')
-        self.assertNotIn('EDIT', post_000_main_div.text)
+        # self.assertNotIn('EDIT', post_000_main_div.text)
 
         # login test
         login_success = self.client.login(username='smith', password='smith')
@@ -247,9 +251,9 @@ class TestView(TestCase):
         soup = BeautifulSoup(response.content, 'html.parser')
         # self.assertEqual(soup.title.text, 'Blog - {}'.format(category_jazz.name))
 
-        main_div = soup.find('div',id='main-div')
+        main_div = soup.find('div', id='main-div')
 
-        self.assertNotIn('No Category',main_div.text)
+        self.assertNotIn('No Category', main_div.text)
         self.assertIn(post_001.category.name, main_div.text)
 
     def test_post_list_no_category(self):
@@ -270,9 +274,9 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
 
         soup = BeautifulSoup(response.content, 'html.parser')
-        main_div = soup.find('div',id='main-div')
+        main_div = soup.find('div', id='main-div')
 
-        self.assertIn('No Category',main_div.text)
+        self.assertIn('No Category', main_div.text)
         self.assertNotIn(post_001.category.name, main_div.text)
 
     def test_post_list_with_tag(self):
@@ -300,7 +304,7 @@ class TestView(TestCase):
         self.assertEqual(response.status_code, 200)
 
         soup = BeautifulSoup(response.content, 'html.parser')
-        main_div = soup.find('div',id='main-div')
+        main_div = soup.find('div', id='main-div')
 
         self.assertIn('#{}'.format(tag_bluenote), main_div.text)
         self.assertNotIn('#{}'.format(tag_emc), main_div.text)
@@ -311,12 +315,29 @@ class TestView(TestCase):
             content='first post content',
             author=self.author_000,
         )
-        self.assertEqual(post_000.get_update_url(),post_000.get_absolute_url()+'update/')
+        self.assertEqual(post_000.get_update_url(), post_000.get_absolute_url() + 'update/')
         response = self.client.get(post_000.get_update_url())
         self.assertEqual(response.status_code, 200)
 
         soup = BeautifulSoup(response.content, 'html.parser')
-        main_div = soup.find('div',id='main-div')
+        main_div = soup.find('div', id='main-div')
 
         self.assertNotIn('Created', main_div.text)
         self.assertNotIn('Author', main_div.text)
+
+    def test_post_create(self):
+        response = self.client.get('/blog/create/')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/blog/')
+        soup = BeautifulSoup(response.content, 'html.parser')
+        side_div = soup.find('div', id='side-div')
+        self.assertNotIn('New Post', side_div.text)
+
+        login_success = self.client.login(username='smith', password='smith')
+        self.assertTrue(login_success)
+
+        response = self.client.get('/blog/')
+        soup = BeautifulSoup(response.content, 'html.parser')
+        side_div = soup.find('div', id='side-div')
+        self.assertIn('New Post', side_div.text)

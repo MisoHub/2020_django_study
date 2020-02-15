@@ -78,6 +78,15 @@
 
         <!-- Sidebar Widgets Column -->
         <div class="col-md-4" id="side-div">
+            {% if request.user.is_authenticated %}
+            <!-- control  Widget -->
+            <div class="card my-4" >
+                <h5 class="card-header">Management</h5>
+                <div class="card-body">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="location.href='/blog/create/'">New Post</button>
+                </div>
+            </div>
+            {% endif %}
             <!-- Search Widget -->
             <div class="card my-4" >
                 <h5 class="card-header">Search</h5>
@@ -119,9 +128,6 @@
                     You can put anything you want inside of these side widgets. They are easy to use, and feature the new Bootstrap 4 card containers!
                 </div>
             </div>
-
-        </div>
-
     </div>
     <!-- /.row -->
 </div>
