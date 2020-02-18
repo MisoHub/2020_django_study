@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from blog.models import Post, Category, Tag
+from blog.models import Post, Category, Tag, Comment
 from django.utils import timezone
 from django.contrib.auth.models import User
 
@@ -35,6 +35,21 @@ def create_post(title, content, author, category=None):
         author=author,
         category=category
     )
+
+
+def create_comment(post, text='', author=None):
+    if author is None:
+        author, is_created = User.objects.get_or_create(
+            username='guest',
+            password='password'
+        )
+    comment = Comment.objects.create(
+        post=post,
+        text=text,
+        author=author,
+    )
+
+    return comment
 
 
 class TestModel(TestCase):
@@ -80,14 +95,19 @@ class TestModel(TestCase):
         self.assertEqual(tag_001.post_set.first(), post_000)
         self.assertEqual(tag_001.post_set.last(), post_001)
 
-    def test_post(self):
-        category = create_category('Jazz')
+
+    def test_create_comment(self):
         post_000 = create_post(
-            title='The first tet post',
+            title='The first test post',
             content='first post content',
             author=self.author_000,
-            category=category
         )
+
+        comment_000 = create_comment(post_000,'my first test comment!')
+        comment_001 = create_comment(post_000,'my second test comment!')
+
+        self.assertEqual(Comment.objects.count(),2)
+        self.assertEqual(post_000.comment_set.count(),2)
 
 
 class TestView(TestCase):
@@ -214,6 +234,21 @@ class TestView(TestCase):
         # check detail page categories
         self.check_side_categories(soup=soup)
 
+        # test comment
+        comment_000 = create_comment(post_000,'my first test comment!')
+        comment_001 = create_comment(post_000,'my second test comment!', author=self.author_000)
+
+        response = self.client.get(post_000_url) # --refresh
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+
+        comment_div = soup.body.find('div', id='comment-div')
+        self.assertIn(comment_000.author.username, comment_div.text)
+        self.assertIn(comment_000.text, comment_div.text)
+        self.assertIn(comment_001.author.username, comment_div.text)
+        self.assertIn(comment_001.text, comment_div.text)
+
         # check post list tag
         self.assertIn('#{}'.format(tag_emc), post_000_main_div.text)
         self.assertIn('#{}'.format(tag_bluenote), post_000_main_div.text)
@@ -226,11 +261,18 @@ class TestView(TestCase):
         login_success = self.client.login(username='smith', password='smith')
         self.assertTrue(login_success)
 
-        response = self.client.get(post_000_url)
+        response = self.client.get(post_000_url) # --refresh
         soup = BeautifulSoup(response.content, 'html.parser')
         post_000_main_div = soup.body.find('div', id='main-div')
 
         self.assertIn('EDIT', post_000_main_div.text)
+
+
+
+
+
+
+
 
     def test_post_list_by_category(self):
         post_000 = create_post(
