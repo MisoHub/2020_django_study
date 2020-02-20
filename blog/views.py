@@ -1,7 +1,9 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from .models import Post, Category, Tag
 from django.views.generic import ListView,DetailView,UpdateView, CreateView
+from .forms import CommentForm
 
 class PostList(ListView):
     model = Post
@@ -23,6 +25,7 @@ class PostDetail(DetailView):
         context = super(type(self), self).get_context_data(**kwargs)
         context['category_list'] = Category.objects.all()
         context['posts_without_category'] = Post.objects.filter(category=None).count()
+        context['comment_form'] = CommentForm()
         return context
 
 class PostCreate(LoginRequiredMixin, CreateView):
@@ -76,6 +79,27 @@ class PostListByTag(ListView):
         context['category_list'] = Category.objects.all()
         context['posts_without_category'] = Post.objects.filter(category=None).count()
         return context
+
+
+def new_comment(request, pk):
+    detail_post = Post.objects.get(pk=pk)
+
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.post = detail_post
+            user = request.user
+            if user.is_anonymous:
+                user, is_created = User.objects.get_or_create(
+                    username='guest',
+                    password='guest123',
+                )
+            comment.author = user
+            comment.save()
+            return redirect(comment.get_absolute_url())
+    else:
+        return redirect('/blog/')
 
 
 

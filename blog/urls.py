@@ -19,6 +19,7 @@ from . import views
 urlpatterns = [
     path('', views.PostList.as_view()),  # ~/blog/
     path('<int:pk>/', views.PostDetail.as_view()),  # ~/blog/pk
+    path('<int:pk>/new_comment', views.new_comment),  # ~/blog/pk
     path('create/', views.PostCreate.as_view()),
     path('<int:pk>/update/', views.PostUpdate.as_view()),  # ~/blog/pk/update/
     path('category/<str:slug>/', views.PostListByCategory.as_view()),

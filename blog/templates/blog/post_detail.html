@@ -58,14 +58,14 @@
 
 <hr>
 
-
+{% load crispy_forms_tags %}
 <!-- Comments Form -->
 <div class="card my-4">
     <h5 class="card-header">Leave a Comment:</h5>
     <div class="card-body">
-        <form>
+        <form method="post" action="{{ object.get_absolute_url}}new_comment"> {% csrf_token %}
             <div class="form-group">
-                <textarea class="form-control" rows="3"></textarea>
+                {{ comment_form | crispy }}
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
@@ -73,9 +73,9 @@
 </div>
 
 <!-- My Comment -->
-<div class="media mb-4" id="comment-div">
+<div id="comment-list">
     {% for c in object.comment_set.all %}
-    <div class="media mb-4">
+    <div class="media mb-4" id="comment-id-{{ c.pk }}">
         <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
         <div class="media-body">
             <h5 class="mt-0">{{ c.author }}</h5>
@@ -84,7 +84,6 @@
     </div>
     {% endfor %}
 </div>
-
 
 <!-- Single Comment -->
 <div class="media mb-4">

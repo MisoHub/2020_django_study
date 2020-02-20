@@ -243,7 +243,7 @@ class TestView(TestCase):
 
         soup = BeautifulSoup(response.content, 'html.parser')
 
-        comment_div = soup.body.find('div', id='comment-div')
+        comment_div = soup.body.find('div', id='comment-list')
         self.assertIn(comment_000.author.username, comment_div.text)
         self.assertIn(comment_000.text, comment_div.text)
         self.assertIn(comment_001.author.username, comment_div.text)
@@ -266,12 +266,6 @@ class TestView(TestCase):
         post_000_main_div = soup.body.find('div', id='main-div')
 
         self.assertIn('EDIT', post_000_main_div.text)
-
-
-
-
-
-
 
 
     def test_post_list_by_category(self):
@@ -384,3 +378,25 @@ class TestView(TestCase):
         soup = BeautifulSoup(response.content, 'html.parser')
         side_div = soup.find('div', id='side-div')
         self.assertIn('New Post', side_div.text)
+
+    def test_new_comment(self):
+        post_000 = create_post(
+            title='The first test post',
+            content='first post content',
+            author=self.author_000,
+        )
+
+        response = self.client.post(
+            post_000.get_absolute_url() + 'new_comment',
+            {'text':' my-test-comment'},
+            follow=True,
+            )
+
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(post_000.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div', id='main-div')
+        self.assertIn('my-test-comment', main_div.text)
