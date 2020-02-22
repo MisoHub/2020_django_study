@@ -115,6 +115,7 @@ class TestView(TestCase):
     def setUp(self):
         # self.client = Client() ## -- can be skipped
         self.author_000 = User.objects.create_user(username='smith', password='smith')
+        self.author_001 = User.objects.create_user(username='charlie', password='charlie')
 
     # method should not be named 'test*'
     def check_navbar(self, soup):
@@ -235,8 +236,8 @@ class TestView(TestCase):
         self.check_side_categories(soup=soup)
 
         # test comment
-        comment_000 = create_comment(post_000,'my first test comment!')
-        comment_001 = create_comment(post_000,'my second test comment!', author=self.author_000)
+        comment_000 = create_comment(post_000,'my first test comment!',author=self.author_000)
+        comment_001 = create_comment(post_000,'my second test comment!', author=self.author_001)
 
         response = self.client.get(post_000_url) # --refresh
         self.assertEqual(response.status_code, 200)
@@ -267,6 +268,15 @@ class TestView(TestCase):
 
         self.assertIn('EDIT', post_000_main_div.text)
 
+        # comment
+        comment_div = post_000_main_div.find('div',id='comment-list')
+        comment_000_div = comment_div.find('div',id='comment-id-{}'.format(comment_000.pk))
+        self.assertIn('edit',comment_000_div.text)
+        self.assertIn('delete',comment_000_div.text)
+
+        comment_001_div = comment_div.find('div',id='comment-id-{}'.format(comment_001.pk))
+        self.assertNotIn('edit',comment_001_div.text)
+        self.assertNotIn('delete',comment_001_div.text)
 
     def test_post_list_by_category(self):
         post_000 = create_post(
