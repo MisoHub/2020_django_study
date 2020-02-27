@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
+    path('',  include('blog.urls')),
     path('blog/',  include('blog.urls')),
     path('admin/', admin.site.urls),
     url('^markdownx/', include('markdownx.urls')),
