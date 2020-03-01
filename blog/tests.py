@@ -410,3 +410,37 @@ class TestView(TestCase):
         soup = BeautifulSoup(response.content, 'html.parser')
         main_div = soup.find('div', id='main-div')
         self.assertIn('my-test-comment', main_div.text)
+
+
+    def test_delete_comment(self):
+        post_000 = create_post(
+            title='The first test post',
+            content='first post content',
+            author=self.author_000,
+        )
+
+        comment00 = create_comment(post_000,'test comment1',self.author_000)
+        comment01 = create_comment(post_000,'test comment2',self.author_001)
+
+        self.assertEqual(Comment.objects.count(), 2)
+
+        login_success = self.client.login(username=self.author_000.username, password=self.author_000.username)
+        self.assertTrue(login_success)
+
+        ## delete login user comment
+        response = self.client.get('/blog/delete_comment/{}'.format(comment00.pk), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Comment.objects.count(), 1)
+
+        ## delete other user comment
+        response = self.client.get('/blog/delete_commnet/{}'.format(comment01.pk), follow=True)
+        self.assertEqual(Comment.objects.count(), 1)
+
+        response = self.client.get(post_000.get_absolute_url())
+
+        soup = BeautifulSoup(response.content, 'html.parser')
+        main_div = soup.find('div', id='main-div')
+        self.assertIn(comment01.text, main_div.text)
+
+
+

@@ -22,6 +22,18 @@
 </p>
 
 <hr>
+
+<!-- edit button -->
+<p>
+{% if request.user == object.author or requeste.user.username == "admin" %}
+    <button type="button" class="btn btn-outline-primary float-right btn-sm">EDIT</button>
+{% else %}
+    {% if  request.user.username == "admin" %}
+        <button type="button" class="btn btn-outline-primary float-right btn-sm" onclick="location.href=' {{ object.get_update_url }} '">EDIT</button>
+    {% endif %}
+{% endif %}
+</p>
+
 <p>
 <!-- Preview Image -->
 {% if object.head_image %}
@@ -33,20 +45,6 @@
 
 <!-- Post Content -->
 <div>{{ object.get_markdown_content | safe }} </div>
-
-<!-- edit button -->
-<p>
-
-{% ifequal request.user object.author %}
-    <button type="button" class="btn btn-outline-primary c btn-sm">EDIT</button>
-{% else %}
-    {% if  request.user.text == admin %}
-        <button type="button" class="btn btn-outline-primary float-right btn-sm" onclick="location.href=' {{ object.get_update_url }} '">EDIT</button>
-    {% endif %}
-
-
-{% endifequal %}
-</p>
 
 <!-- Tags -->
 <p>
@@ -79,12 +77,16 @@
         <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
         <div class="media-body">
             <h5 class="mt-0">{{ c.author }} <small class="text-muted">{{ c.created_at }}</small></h5>
-                        {% ifequal request.user c.author %}
+            {% if request.user == c.author or request.user.username == "admin" %}
             <div class="media mb-4 float-right">
                 <button type="button" class="btn btn-outline-primary btn-sm" onclick="location.href=' '">edit</button>
-                <button type="button" class="btn btn-outline-primary btn-sm" onclick="location.href='  '">delete</button>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#deleteCommentModal-{{ c.pk }}">
+                        Delete
+                    </button>
+<!--                <button type="button" class="btn btn-outline-primary btn-sm" onclick="location.href='/blog/delete_comment/{{ c.pk }}'">delete</button>-->
             </div>
-            {% endifequal %}
+            {% endif %}
             <div>
             {{ c.text }}
             </div>
@@ -92,6 +94,33 @@
     </div>
     {% endfor %}
 </div>
+
+
+
+<!-- Modal -->
+{% for c in object.comment_set.all %}
+{% if user == c.author or user.username == "admin" %}
+<div class="modal fade" id="deleteCommentModal-{{ c.pk }}" tabindex="-1" role="dialog" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete Comment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <a> Do you wanna delete this comment?</a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" onclick="location.href='/blog/delete_comment/{{ c.pk }}'">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
 
 <!--&lt;!&ndash; Comment with nested comments &ndash;&gt;-->
 <!--<div class="media mb-4">-->

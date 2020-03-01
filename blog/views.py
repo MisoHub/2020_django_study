@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from .models import Post, Category, Tag
+from .models import Post, Category, Tag, Comment
 from django.views.generic import ListView,DetailView,UpdateView, CreateView
 from .forms import CommentForm
 
@@ -102,6 +102,16 @@ def new_comment(request, pk):
         return redirect('/blog/')
 
 
+
+def delete_comment(request, pk):
+    comment = Comment.objects.get(pk=pk)
+    post = comment.post
+
+    if request.user == comment.author or request.user.username == "admin":
+        comment.delete()
+        return redirect(post.get_absolute_url()+'#comment-list')
+    else:
+        return redirect('/blog')
 
 # Create your views here.
 
