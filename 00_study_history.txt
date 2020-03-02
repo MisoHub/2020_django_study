@@ -42,4 +42,30 @@ python manage.py tests  // test code 실행 ..
 test code don't be effect by db.sqlite3 file which already created by manual test
 it start with empty status of db. 	(even function level ..) 
 
-	
+
+----
+method based view 
+class based view 
+
+----
+python with 
+
+<with-out> 
+set things up
+try:
+    do something
+finally:
+    tear things down
+
+
+<with>
+class controlled_execution:
+    def __enter__(self):
+        set things up
+        return thing
+    def __exit__(self, type, value, traceback):
+        tear things down
+
+with controlled_execution() as thing:
+     some code using thing
+	 
