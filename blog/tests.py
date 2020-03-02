@@ -433,8 +433,9 @@ class TestView(TestCase):
         self.assertEqual(Comment.objects.count(), 1)
 
         ## delete other user comment
-        response = self.client.get('/blog/delete_commnet/{}'.format(comment01.pk), follow=True)
-        self.assertEqual(Comment.objects.count(), 1)
+        with self.assertRaises(PermissionError):
+            response = self.client.get('/blog/delete_commnet/{}'.format(comment01.pk), follow=True)
+            self.assertEqual(Comment.objects.count(), 1)
 
         response = self.client.get(post_000.get_absolute_url())
 

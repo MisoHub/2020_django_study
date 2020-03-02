@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from .models import Post, Category, Tag, Comment
-from django.views.generic import ListView,DetailView,UpdateView, CreateView
+from django.views.generic import ListView,DetailView,UpdateView, CreateView, DeleteView
 from .forms import CommentForm
 
 class PostList(ListView):
@@ -103,15 +103,29 @@ def new_comment(request, pk):
 
 
 
-def delete_comment(request, pk):
-    comment = Comment.objects.get(pk=pk)
-    post = comment.post
+# def delete_comment(request, pk):
+#     comment = Comment.objects.get(pk=pk)
+#     post = comment.post
+#
+#     if request.user == comment.author or request.user.username == "admin":
+#         comment.delete()
+#         return redirect(post.get_absolute_url()+'#comment-list')
+#     else:
+#         return redirect('/blog')
+#
 
-    if request.user == comment.author or request.user.username == "admin":
-        comment.delete()
-        return redirect(post.get_absolute_url()+'#comment-list')
-    else:
-        return redirect('/blog')
+class CommentDelete(DeleteView):
+    model = Comment
+
+
+    def get_object(self,queryset=None):
+        comment = super(CommentDelete,self).get_object()
+        if comment.author != self.request.user:
+            raise PermissionError('!! Permission ERROR !! ')
+
+    def get_success_url(self):
+        post = self.get_object().post # get object return comment object
+        return post.get_absolute_url()+'#comment-list'
 
 # Create your views here.
 
